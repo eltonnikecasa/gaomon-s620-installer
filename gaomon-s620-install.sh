@@ -190,7 +190,7 @@ install_dependencies() {
 }
 
 fetch_page() {
-  curl -fL --retry 3 --connect-timeout 15 --max-time 60 \
+  curl -fsSL --retry 3 --connect-timeout 15 --max-time 60 \
     -A "Mozilla/5.0 gaomon-s620-fedora-installer" "$GAOMON_PAGE"
 }
 
@@ -229,8 +229,13 @@ discover_driver() {
     *) url="https://download.gaomon.net/plus/${url#./}" ;;
   esac
 
-  [[ "$url" == https://download.gaomon.net/* ]] ||
-    die "URL de download fora do domínio oficial recusada: $url"
+  case "$url" in
+    https://download.gaomon.net/*|https://driver.gaomon.net/*)
+      ;;
+    *)
+      die "URL de download fora dos hosts oficiais permitidos recusada: $url"
+      ;;
+  esac
 
   DRIVER_FILENAME="$filename"
   AVAILABLE_VERSION="$version"
